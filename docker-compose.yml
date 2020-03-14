@@ -1,16 +1,17 @@
-version: "2"
+version: "3.7"
 services:
   app:
     build: ./app
-    links:
+    depends_on:
       - db
-      ports:
-        - "5000:5000"
+    ports:
+      - "5000:5000"
+    restart: on-failure
   db:
     image: mysql:5.7
     ports:
       - "5001:3306"
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      volumes:
-        - ./db:/docker-entrypoint-initdb.d/:ro
+      MYSQL_ROOT_PASSWORD: sherlockeD123
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d/:ro

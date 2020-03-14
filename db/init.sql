@@ -1,5 +1,7 @@
 CREATE DATABASE MSCI;
-USE MSCI
+USE MSCI;
 CREATE TABLE Student(
-       studentName varchar(10) null;
-)
+id INTEGER AUTO_INCREMENT,
+student_name TEXT,
+PRIMARY KEY (id)
+);
