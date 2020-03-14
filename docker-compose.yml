@@ -15,3 +15,7 @@ services:
       MYSQL_ROOT_PASSWORD: sherlockeD123
     volumes:
       - ./db:/docker-entrypoint-initdb.d/:ro
+  ui:
+    build: ./react-ctrlf
+    ports:
+      - "5002:3000"
