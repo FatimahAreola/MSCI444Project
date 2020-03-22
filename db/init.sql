@@ -24,7 +24,7 @@ CREATE TABLE Course(
 courseID VARCHAR(7),
 courseName VARCHAR(50),
 courseDescription TEXT,
-courseAccessCode INTEGER AUTO_INCREMENT
+courseAccessCode INTEGER AUTO_INCREMENT,
 courseStartDate DATE,
 courseEndDate DATE,
 PRIMARY KEY (courseID)
