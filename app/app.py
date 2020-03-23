@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 @app.route('/hello')
 def hello():
-    return "Bye!"
+    return "hey"
 
 # sample json body
 # [
