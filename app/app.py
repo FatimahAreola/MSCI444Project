@@ -17,9 +17,16 @@ app = Flask(__name__)
 def hello():
     return "Bye!"
 
+# sample json body
+# [
+# 	{
+# 	"lectureContent" : "blah blah blah",
+# 	"textbookID" : 1
+# 	}
+# ]
 @app.route('/match')
 def match():
-    lectureID = request.args.get('lecture')
+    lectureContent = request.args.get('lecture')
     textbookID = request.args.get('textbook')
     # return 'the lecturecontent is {}'.format(lectureID)
     # req_data = request.get_json()
@@ -27,11 +34,12 @@ def match():
     cursor = connection.cursor()
 
     url = 'http://api.cortical.io:80/rest/text/keywords?retina_name=en_associative'
-    myobj = {'body': lectureID}
+    # myobj = {req_data['lectureContent']}
+    myobj = {'body': lectureContent}
 
     keywords = requests.post(url, data = myobj)
 
-    # textbookID = req_data['testbookID']
+    # textbookID = req_data['textbookID']
 
     query = "SELECT textbookContent FROM Textbook WHERE textbookID = {};".format(textbookID)
     
@@ -42,4 +50,4 @@ def match():
     for (textbookContent) in cursor:
         data.append(textbookContent)
 
-    return 'the lecturecontent is {}'.format(keywords)
+    return 'the lecturecontent is {}'.format(data)
