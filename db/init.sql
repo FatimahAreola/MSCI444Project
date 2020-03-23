@@ -34,7 +34,7 @@ CREATE TABLE Lecture(
 lectureID INTEGER AUTO_INCREMENT,
 lectureName VARCHAR(50),
 lectureContent TEXT,
-uploadDate DATE DEFAULT CURDATE(),
+-- uploadDate DATE DEFAULT CURDATE(),
 PRIMARY KEY (lectureID)
 );
 
@@ -61,36 +61,36 @@ FOREIGN KEY (textbookID)
 
 CREATE TABLE StudentCourse(
 studentID INTEGER,
-courseID INTEGER,
-Primary KEY (studentID, courseID),
+courseAccessCode INTEGER,
+Primary KEY (studentID, courseAccessCode),
 FOREIGN KEY (studentID)
-    REFERENCES Student(studentID)
-    ON DELETE CASCADE,
-FOREIGN KEY (courseID)
-    REFERENCES Course(courseID)
-    ON DELETE CASCADE
+REFERENCES Student(studentID)
+ON DELETE CASCADE,
+FOREIGN KEY (courseAccessCode)
+REFERENCES Course(courseAccessCode)
+ON DELETE CASCADE
 );
 
 CREATE TABLE InstructorCourse(
 employeeID INTEGER,
-courseID INTEGER,
-Primary KEY (employeeID, courseID),
+courseAccessCode INTEGER,
+Primary KEY (employeeID, courseAccessCode),
 FOREIGN KEY (employeeID)
     REFERENCES Instructor(employeeID)
     ON DELETE CASCADE,
-FOREIGN KEY (courseID)
-    REFERENCES Course(courseID)
+FOREIGN KEY (courseAccessCode)
+    REFERENCES Course(courseAccessCode)
     ON DELETE CASCADE
 );
 
 CREATE TABLE LectureCourse(
 lectureID INTEGER,
-courseID INTEGER,
-Primary KEY (lectureID, courseID),
+courseAccessCode INTEGER,
+Primary KEY (lectureID, courseAccessCode),
 FOREIGN KEY (lectureID)
     REFERENCES Lecture(lectureID)
     ON DELETE CASCADE,
-FOREIGN KEY (courseID)
-    REFERENCES Course(courseID)
+FOREIGN KEY (courseAccessCode)
+    REFERENCES Course(courseAccessCode)
     ON DELETE CASCADE
 );
