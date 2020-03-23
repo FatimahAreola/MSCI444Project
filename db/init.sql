@@ -27,7 +27,7 @@ courseDescription TEXT,
 courseAccessCode INTEGER AUTO_INCREMENT,
 courseStartDate DATE,
 courseEndDate DATE,
-PRIMARY KEY (courseID)
+PRIMARY KEY (courseAccessCode)
 );
 
 CREATE TABLE Lecture(
