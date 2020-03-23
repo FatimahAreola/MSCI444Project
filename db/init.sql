@@ -34,7 +34,7 @@ CREATE TABLE Lecture(
 lectureID INTEGER AUTO_INCREMENT,
 lectureName VARCHAR(50),
 lectureContent TEXT,
--- uploadDate DATE DEFAULT CURDATE(),
+uploadDate DATE,
 PRIMARY KEY (lectureID)
 );
 
@@ -66,7 +66,7 @@ Primary KEY (studentID, courseAccessCode),
 FOREIGN KEY (studentID)
 REFERENCES Student(studentID)
 ON DELETE CASCADE,
-FOREIGN KEY (courseAccessCode)
+FOREIGN KEY (courseAccessCode )
 REFERENCES Course(courseAccessCode)
 ON DELETE CASCADE
 );
