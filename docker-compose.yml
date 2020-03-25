@@ -23,4 +23,4 @@ services:
       - "5002:3000"
     volumes:
       - ./react-ctrlf:/usr/src/app
-    entrypoint: ["npm", "start"]
+      - /usr/src/app/node_modules
