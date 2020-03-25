@@ -1,14 +1,13 @@
-FROM node:8
+FROM node:latest
 # Create app directory
 WORKDIR /usr/src/app
 # Install app dependencies
 COPY package*.json ./
 
 RUN npm install --silent
-RUN npm install --save fomantic-ui-css
 # Copy app source code
-COPY . .
+# COPY . .
 
 #Expose port and start application
 EXPOSE 3000
-CMD ["npm", "start"]
+# CMD ["npm", "start"]

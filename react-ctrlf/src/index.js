@@ -1,5 +1,4 @@
 import React from 'react';
-import 'fomantic-ui-css/semantic.min.css';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
