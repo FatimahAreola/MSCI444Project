@@ -40,7 +40,7 @@ def match():
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor()
 
-    lectureContentToMatch = req_data['lectureContent']
+    lectureContentToMatch = req_data[0]['lectureContent']
 
     # url = 'http://api.cortical.io:80/rest/text/keywords?retina_name=en_associative'
     # myobj = {req_data['lectureContent']}
@@ -48,13 +48,18 @@ def match():
 
     # keywords = requests.post(url, data = myobj)
 
-    textbookID = req_data['textbookID']
+    textbookID = req_data[0]['textbookID']
 
-    query = "SELECT textbookContent FROM Textbook WHERE textbookID = {};".format(textbookID)
+    query = "SELECT textbookContent FROM Textbook WHERE textbookID = %s;"
     
-    cursor.execute(query)
+    cursor.execute(query, [textbookID])
+    
+    content = "hi"
 
-    textbookSectionsToMatch = cursor[0].split('<div>')
+    for textbookContent in cursor:
+        content = textbookContent[0]
+
+    textbookSectionsToMatch = content.split('<div>')
 
     body=[]
 
@@ -71,9 +76,8 @@ def match():
 
     result = []
 
-    for value in matchValue:
-        if value>80:
-            result.append()
+    for index,value in enumerate(matchValue):
+        if value['weightedScoring']>80:
+            result.append(textbookSectionsToMatch[index])
 
-
-    return 'the lecturecontent is {}'.format()
+    return {'matches': result}
