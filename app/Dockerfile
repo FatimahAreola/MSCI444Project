@@ -8,6 +8,7 @@ ENV FLASK_RUN_HOST 0.0.0.0
 ENV FLASK_DEBUG=1
 COPY requirements.txt /app
 RUN pip install -r requirements.txt
-
+COPY textbooks /textbooks
+COPY lectures /lectures
 COPY app.py /app
 CMD ["flask", "run"]
