@@ -54,7 +54,7 @@ def match():
     
     cursor.execute(query, [textbookID])
     
-    content = "hi"
+    content = None
 
     for textbookContent in cursor:
         content = textbookContent[0]
@@ -65,15 +65,17 @@ def match():
 
     for section in textbookSectionsToMatch:
         term = []
-        term.append({'term' : lectureContentToMatch})
-        term.append({'term' : section})
+        term.append({"term" : lectureContentToMatch})
+        term.append({"term" : section})
         body.append(term)
+
+    # body = json.loads(body)
     
     url = 'http://api.cortical.io:80/rest/compare/bulk?retina_name=en_associative'
-    myobj = body
 
-    matchValue = requests.post(url, data = myobj)
+    matchValue = requests.post(url, json=body)
 
+    return matchValue.text
     result = []
 
     for index,value in enumerate(matchValue):
