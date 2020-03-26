@@ -75,7 +75,8 @@ def match():
 
     matchValue = requests.post(url, json=body)
 
-    return matchValue.text
+    matchValue = json.loads(matchValue.text)
+
     result = []
 
     for index,value in enumerate(matchValue):
