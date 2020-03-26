@@ -80,7 +80,7 @@ def match():
     result = []
 
     for index,value in enumerate(matchValue):
-        if value['weightedScoring']>80:
+        if value['weightedScoring']>0.80:
             result.append(textbookSectionsToMatch[index])
 
     return {'matches': result}
