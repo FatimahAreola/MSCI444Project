@@ -1,6 +1,7 @@
 from flask import Flask, request, json
 import mysql.connector
 import requests
+import re
 
 config = {
     'user': 'root',
@@ -26,9 +27,6 @@ def hello():
 # ]
 @app.route('/match')
 def match():
-    # lectureContent = request.args.get('lecture')
-    # textbookID = request.args.get('textbook')
-    # return 'the lecturecontent is {}'.format(lectureID)
     req_data = request.get_json()
     config = {
         'user': 'root',
@@ -42,12 +40,6 @@ def match():
 
     lectureContentToMatch = req_data[0]['lectureContent']
 
-    # url = 'http://api.cortical.io:80/rest/text/keywords?retina_name=en_associative'
-    # myobj = {req_data['lectureContent']}
-    # myobj = {'body': lectureContent}
-
-    # keywords = requests.post(url, data = myobj)
-
     textbookID = req_data[0]['textbookID']
 
     query = "SELECT textbookContent FROM Textbook WHERE textbookID = %s;"
@@ -59,7 +51,7 @@ def match():
     for textbookContent in cursor:
         content = textbookContent[0]
 
-    textbookSectionsToMatch = content.split('<div>')
+    textbookSectionsToMatch = re.findall("<div>(.*?)</div>", content)
 
     body=[]
 
@@ -68,8 +60,6 @@ def match():
         term.append({"term" : lectureContentToMatch})
         term.append({"term" : section})
         body.append(term)
-
-    # body = json.loads(body)
     
     url = 'http://api.cortical.io:80/rest/compare/bulk?retina_name=en_associative'
 
