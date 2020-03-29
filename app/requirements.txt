@@ -1,2 +1,5 @@
 Flask
 mysql-connector
+pdfminer
+pdfminer.six
+(may or may not need Textract)
