@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import re
 import mysql.connector
 
 class DbSelector():
@@ -60,20 +61,78 @@ def checkLoginId(email, table):
         return False
     else:
         return {"user_id": results[0]}
+
 @app.route('/courses', methods=["POST"])
 def findCourses():
     print('Find courses')
     email = get_post_data('user_id')
-    sql = "select c.courseName from StudentCourse as sc join Course as c using(courseAccessCode) where studentID=%s"
+    sql = "select c.courseName, c.courseAccessCode from StudentCourse as sc join Course as c using(courseAccessCode) where studentID=%s"
     params = (email,)
     with DbSelector() as db:
         db.cursor.execute(sql, params)
         rows = db.cursor.fetchall()
-    courses = [row.courseName for row in rows]
+    courses = []
+    for row in rows:
+        courses.append({"course_name":row[0].decode(),"course_access_code":row[1]})
+    print('courses', courses)
     return jsonify({"courses": courses}), 200
 
+@app.route('/course/join', methods=["POST"])
+def joinCourse():
+    print('Joining Courses')
+    user_id = get_post_data("user_id")
+    access_code = get_post_data("access_code")
+    sql = """SELECT courseName FROM Course
+    WHERE courseAccesscode = %s"""
+    params = (access_code,)
+    with DbSelector() as db:
+        db.cursor.execute(sql, params)
+        rows = db.cursor.fetchone()
+    if rows:
+        course_name = rows[0].decode()
+        sql = """INSERT INTO StudentCourse (studentID, courseAccessCode)
+        VALUES (%s, %s)"""
+        params = (user_id, access_code)
+        with DbSelector() as db:
+            db.cursor.execute(sql, params)
+        return jsonify({"course": course_name}), 200
+    else:
+        return jsonify(message="Invalid"), 401
 
+@app.route('/lectures', methods=["POST"])
+def findLectures():
+    print('Find Lectures')
+    course_access_code = get_post_data('course_access_code')
+    sql = "select l.lectureID, l.lectureName from Lecture as l join LectureCourse as c using(lectureID) where courseAccessCode=%s"
+    params = (course_access_code,)
+    with DbSelector() as db:
+        db.cursor.execute(sql, params)
+        rows = db.cursor.fetchall()
+    lectures = []
+    for row in rows:
+        lectures.append({"lecture_id":row[0],"lecture_name":row[1].decode()})
+    if not rows:
+        return jsonify(message="No lectures"), 401
+    return jsonify({"lectures": lectures}), 200
 
-
-
-
+@app.route('/lectureSlides', methods=["POST"])
+def findLectureSlides():
+    print('Finding lecture slides')
+    lecture_id = get_post_data('lecture_id')
+    sql = "select lectureContent from Lecture where lectureID=%s"
+    params = (lecture_id, )
+    lecture_slides = []
+    with DbSelector() as db:
+        db.cursor.execute(sql, params)
+        result = db.cursor.fetchone()
+    print('Result')
+    print(result)
+    if result:
+        matches = re.findall("<div>(.*?)</div>", result[0].decode())
+        for match in matches:
+            lecture_slides.append(match.strip())
+        print('Lecture Slides List')
+        print(lecture_slides)
+        return jsonify({"lecture_content": lecture_slides}), 200
+    else:
+        return jsonify(message="No lecture slides found"), 401

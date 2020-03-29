@@ -48,7 +48,7 @@ const Login = () =>{
         }/>
         <label for="professor">Professor</label>
         </div>
-        <button
+        <button type="submit" class="ui button"
             onClick={() => {
                 const evaluate = async() =>{
                     const results = await fetchDbResults();

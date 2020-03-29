@@ -1,8 +1,13 @@
 import React, { useContext, useState, useEffect} from 'react';
 import { UserContext } from './userAuthentication';
+import { Courses } from './courses'
+import LectureMatch from './lectureMatch'
+
 const StudentHome =()=>{
     const [user,setUser] = useContext(UserContext);
-    const [courses, setCourses] = useState('');
+    const [courses, setCourses] = useState([]);
+    const [willJoinCourse, setJoinCourse] = useState(false);
+    const [accessCode, setAccessCode] = useState('');
     useEffect(() =>{
         fetch('/courses',
               {
@@ -13,18 +18,60 @@ const StudentHome =()=>{
                   body: JSON.stringify({'user_id': user.user_id})
               }).then(response =>
             response.json().then(data =>{
-                alert(data.courses);
                 setCourses(data.courses);
             })
               );
     }, []);
 
-    return(
+    const joinACourse = async()=>{
+        const info={"user_id": user.user_id, "access_code": accessCode};
+        const response = await fetch('/course/join',{
+            method:'POST',
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(info)
+        });
+        return(response);
+    }
+    const add = async()=>{
+        const results = await joinACourse();
+        if(results.ok){
+            results.json().then(data =>{
+                setCourses(prevCourses => [...prevCourses, data.course])
+            })
+            alert('Course Added')
+        }
+        else{
+            alert('Course could not be added')
+        }
+    }
 
+    const joinCourseInput =(f)=>{
+        if(f){
+            return    (
+                <div class = "ui input">
+                <input type ="text" placeholder="Access Code" onChange={e => setAccessCode(e.target.value)}/>
+                <button type="submit" className="ui button" onClick={add}>
+                    Add
+                </button>
+                </div>
+            )
+        }
+        else{
+            return (<p></p>);
+        }
+    }
+
+    return(
         <div>
-            {
-                    <h2> {user.user_id} </h2>
-            }
+            <button type="submit" className="ui button" onClick={()=>{
+                setJoinCourse(true);
+            }}>
+                Join Course
+            </button>
+            {joinCourseInput(willJoinCourse)}
+            <Courses courses={courses} />
         </div>
     );
 
