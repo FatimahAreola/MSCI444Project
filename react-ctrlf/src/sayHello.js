@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {Link, useHistory} from 'react-router-dom'
 import {UserContext} from './userAuthentication';
+import { Button, Checkbox, Form, Header } from 'semantic-ui-react'
 
 const Login = () =>{
     const [user,setUser] = useContext(UserContext)
@@ -22,32 +23,37 @@ const Login = () =>{
 
     return(
         <div>
-        <input
-        type="text"
-        placeholder="E-mail"
-        onChange={e => {
-            setEmail(e.target.value);
-        } }
+        <Header as='h1' id="loginHeader">Welcome!</Header>
+        <Form id="login">
+        <Form.Field>
+        <label>Email</label>
+        <input type="text" placeholder='E-mail'
+               onChange={e => {
+                   setEmail(e.target.value);
+               } }
         />
-        <input
-        type="text"
-        placeholder="Password"
+        </Form.Field>
+        <Form.Field>
+        <label>Password</label>
+        <input type="text" placeholder='password'
         onChange={e => {
             setPassword(e.target.value);
         } }
         />
-        <div>
-        <input type="checkbox" id="student" onChange={
+
+        </Form.Field>
+
+        <Form.Field>
+        <Checkbox label='Student' id="student" onChange={
             e => setTable("Student")
         }/>
-        <label for="student">Student</label>
-        </div>
-        <div>
-        <input type="checkbox" id="professor" onChange={
+        </Form.Field>
+
+        <Form.Field>
+        <Checkbox label='Professor' id="professor" onChange={
             e => setTable("Professor")
         }/>
-        <label for="professor">Professor</label>
-        </div>
+        </Form.Field>
         <button type="submit" class="ui button"
             onClick={() => {
                 const evaluate = async() =>{
@@ -55,7 +61,6 @@ const Login = () =>{
                     if (results.ok){
                         results.json().then(data => {
                             const user_id = data.user_id
-                            alert(user_id)
                             const newUser = { user_email: email, user_type: table, user_id: user_id}
                             setUser(newUser)
                             history.push('/studentHome')
@@ -71,7 +76,8 @@ const Login = () =>{
         >
         Submit
         </button>
-        <Link to="/accountCreate"> No account? </Link>
+        <Link className="links" to="/accountCreate"> No account? </Link>
+        </Form>
         </div>
     );
     };

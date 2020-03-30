@@ -12,7 +12,14 @@ code {
     monospace;
 }
 
-.accountWindow{
+.links{
+    color: #2aa7a3;
+}
+
+
+
+
+#login{
     width: 30%;
     position: absolute;
     top: 50%;
@@ -24,10 +31,13 @@ code {
     padding: 2%;
 }
 
-.header{
+#loginHeader{
     display:flex;
     justify-content: space-around;
     align-items: center;
+    margin-top:10%;
+    font-size: 350%;
+    color: #48d1cc;
 
 }
 #welcome{
