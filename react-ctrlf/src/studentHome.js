@@ -8,6 +8,20 @@ const StudentHome =()=>{
     const [courses, setCourses] = useState([]);
     const [willJoinCourse, setJoinCourse] = useState(false);
     const [accessCode, setAccessCode] = useState('');
+
+
+    const display_courses = () => {
+        if(courses.length==0){
+            return (<div></div>)
+        }
+        else{
+            courses.map(course=>{
+            })
+            return(<Courses courses={courses} />)
+        }
+    }
+
+
     useEffect(() =>{
         fetch('/courses',
               {
@@ -21,7 +35,7 @@ const StudentHome =()=>{
                 setCourses(data.courses);
             })
               );
-    }, []);
+    });
 
     const joinACourse = async()=>{
         const info={"user_id": user.user_id, "access_code": accessCode};
@@ -71,7 +85,10 @@ const StudentHome =()=>{
                 Join Course
             </button>
             {joinCourseInput(willJoinCourse)}
-            <Courses courses={courses} />
+            {
+                display_courses()
+
+            }
         </div>
     );
 
@@ -79,3 +96,4 @@ const StudentHome =()=>{
 }
 
 export default StudentHome
+

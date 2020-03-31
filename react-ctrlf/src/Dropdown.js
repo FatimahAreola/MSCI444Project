@@ -3,7 +3,7 @@ import { Dropdown } from 'semantic-ui-react';
 import { LectureContext } from './lectureContext';
 
 export const LectureDropdown = ({ lectures }) =>{
-    const [currentLectureID,setCurrentLectureID] = useContext(LectureContext);
+    const [currentLecture,setCurrentLecture] = useContext(LectureContext);
 
 
     return(
@@ -14,8 +14,8 @@ export const LectureDropdown = ({ lectures }) =>{
                         return(
                             <Dropdown.Item text={lecture.lecture_name} onClick={
                             (e)=>{
-                                setCurrentLectureID(lecture.lecture_id);
-
+                                setCurrentLecture({"current_lecture_id": lecture.lecture_id,
+                                "current_lecture_name": lecture.lecture_name});
                             }}/>
                         )
                     })

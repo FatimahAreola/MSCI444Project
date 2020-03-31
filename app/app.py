@@ -14,6 +14,7 @@ class DbSelector():
         self.cursor = self.connection.cursor(prepared=True)
         return self
     def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.connection.commit()
         self.connection.close()
         self.cursor.close()
 app = Flask(__name__)
@@ -95,7 +96,7 @@ def joinCourse():
         params = (user_id, access_code)
         with DbSelector() as db:
             db.cursor.execute(sql, params)
-        return jsonify({"course": course_name}), 200
+        return jsonify({"course": [{"course_name":course_name, "course_access_code":access_code}]}), 200
     else:
         return jsonify(message="Invalid"), 401
 
@@ -136,3 +137,27 @@ def findLectureSlides():
         return jsonify({"lecture_content": lecture_slides}), 200
     else:
         return jsonify(message="No lecture slides found"), 401
+
+@app.route('/createAccount', methods=["POST"])
+def createAccount():
+    print('Creting account')
+    first_name = get_post_data('first_name')
+    last_name = get_post_data('last_name')
+    email = get_post_data('email')
+    password = get_post_data('password')
+    table = get_post_data('table')
+    sql = "SELECT studentEmail FROM Student WHERE studentEmail=%s"
+    params = (email, )
+    with DbSelector() as db:
+        db.cursor.execute(sql, params)
+        result = db.cursor.fetchone()
+    print('result')
+    print(result)
+    if result:
+        return jsonify(message="A user with this e-mail already exists."), 401
+    else:
+        sql = f"INSERT INTO {table} ({table.lower()}FName, {table.lower()}LName, {table.lower()}Email, {table.lower()}Password) VALUES(%s, %s, %s, %s)"
+        params = (first_name, last_name, email, password)
+        with DbSelector() as db:
+            db.cursor.execute(sql, params)
+        return jsonify(message="Successfully updated resource."), 200

@@ -4,7 +4,7 @@ import { Divider, Grid, Segment, Button } from 'semantic-ui-react'
 
 
 const LectureSlides =()=>{
-    const [currentLectureID,setCurrentLectureID] = useContext(LectureContext);
+    const [currentLecture,setCurrentLecture] = useContext(LectureContext);
     const [lectureSlides, setCurrentLectureSlides] = useState([]);
     const [slideCounter, setSlideCounter] = useState(0);
 
@@ -15,7 +15,7 @@ const LectureSlides =()=>{
                   headers:{
                       'Content-Type': 'application/json'
                   },
-                  body: JSON.stringify({'lecture_id': currentLectureID})
+                  body: JSON.stringify({'lecture_id': currentLecture.current_lecture_id})
               }).then(response =>{
                   if(response.ok){
                       response.json().then(data =>{

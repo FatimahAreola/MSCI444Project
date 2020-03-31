@@ -4,21 +4,34 @@ import { CourseContext } from './courseContext';
 import { Dropdown, Message } from 'semantic-ui-react'
 import { LectureDropdown } from './Dropdown'
 import LectureSlides from './lectureSlides'
+import { LectureContext } from './lectureContext';
 
 
 const LectureMatch = () =>{
     const [user, setUser] = useContext(UserContext);
     const [courseInfo, setCourseInfo] = useContext(CourseContext);
     const [lectures, setLectures] = useState([])
+    const [currentLecture,setCurrentLecture] = useContext(LectureContext);
+
+    const displayCurrentLectureInfo =()=>{
+        return(
+            <Message>
+                <Message.Header className="pageHeader">{courseInfo.course_name}</Message.Header>
+                <p>
+                    {currentLecture.current_lecture_name}
+                </p>
+            </Message>
+        )
+    }
+
+
 
     const lectureInfo =()=>{
         if(!lectures.length==0){
             return(
                 <div>
-                <Message positive id="lectureMatchInstructions">
-                    <Message.Header>Select a set of lecture slides and a textbook to match with</Message.Header>
-                </Message>
-            <LectureDropdown lectures={lectures}/>
+                    {displayCurrentLectureInfo()}
+                    <LectureDropdown lectures={lectures}/>
                 </div>
             );
         }
