@@ -152,11 +152,6 @@ const LectureMatch = () =>{
         <div>
             {lectureInfo()}
             <Button
-                content="Add Lecture"
-            data-content-to-upload="lecture"
-                onClick = {updateDisplayUploadForm}
-            />
-            <Button
                 content="Add Textbook"
                 data-content-to-upload="textbook"
                 onClick = {updateDisplayUploadForm}
