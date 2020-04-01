@@ -94,3 +94,5 @@ FOREIGN KEY (courseAccessCode)
     REFERENCES Course(courseAccessCode)
     ON DELETE CASCADE
 );
+
+

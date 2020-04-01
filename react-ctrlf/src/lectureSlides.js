@@ -1,12 +1,13 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { LectureContext } from './lectureContext';
 import { Divider, Grid, Segment, Button } from 'semantic-ui-react'
-
+import { TextbookContext } from './textbookContext'
 
 const LectureSlides =()=>{
     const [currentLecture,setCurrentLecture] = useContext(LectureContext);
     const [lectureSlides, setCurrentLectureSlides] = useState([]);
     const [slideCounter, setSlideCounter] = useState(0);
+    const [currentTextbook, setCurrentTextbook] = useContext(TextbookContext)
 
     useEffect(() =>{
         fetch('/lectureSlides',
@@ -33,12 +34,12 @@ const LectureSlides =()=>{
             return(
                 <div>
                 <p>{lectureSlides[slideCounter]}</p>
-                <Button id="slideButton" type="submit" onClick={()=>{
+                <Button color="teal" type="submit" onClick={()=>{
                     setSlideCounter(prevCounter => prevCounter-1);
                 }}>
                      Previous Slide
                 </Button>
-                <Button id="slideButton" type="submit" onClick={()=>{
+                <Button color="teal" type="submit" onClick={()=>{
                     setSlideCounter(prevCounter => prevCounter+1);
                 }}>
                     Next Slide
@@ -57,6 +58,7 @@ const LectureSlides =()=>{
                         {displayLectureSlides()}
                     </Grid.Column>
                     <Grid.Column>
+                        {currentTextbook.current_tb_name}
                     </Grid.Column>
                 </Grid>
 

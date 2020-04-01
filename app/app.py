@@ -2,6 +2,11 @@ from flask import Flask, request, jsonify
 import re
 import mysql.connector
 import os
+import io
+from pdfminer.converter import TextConverter
+from pdfminer.pdfinterp import PDFPageInterpreter
+from pdfminer.pdfinterp import PDFResourceManager
+from pdfminer.pdfpage import PDFPage
 
 parent_dir = "/app"
 directory = "textbooks"
@@ -174,13 +179,71 @@ def receive_textbook():
     textbook_file = request.files['textbook']
     textbook_name = request.form['textbookName']
     textbook_edition = request.form['textbookEdition']
-    textbook_author_fname = request.form['textbookFName']
-    textbook_author_lname = request.form['textbookLName']
-    print('File')
-    print(textbook_file.filename)
-    print(textbook_edition)
-    print(textbook_name)
-    print(textbook_author_fname)
-    print(textbook_author_lname)
-    textbook_file.save(os.path.join(uploads_dir, textbook_file.filename))
-    return jsonify(message="Success"), 200
+    author_fname = request.form['textbookFName']
+    author_lname = request.form['textbookLName']
+    user_id = request.form["user"]
+    pdf_path = os.path.join(uploads_dir, textbook_file.filename)
+    textbook_file.save(pdf_path)
+    textbook_string = extractText(pdf_path)
+    print(type(textbook_string))
+    textbook_id = insert_into_textbook(textbook_string, textbook_file, textbook_name, textbook_edition, author_fname, author_lname)
+    insert_into_student_textbook_tbl(textbook_id, user_id)
+    return jsonify({"textbook_id": textbook_id, "textbook_name": textbook_name}), 200
+
+def extractTextByPage(pdfPath):
+    with open(pdfPath, 'rb') as fh:
+        #loops through each page
+        for page in PDFPage.get_pages(fh, 
+                                      caching=True,
+                                      check_extractable=True):
+            rManager = PDFResourceManager()
+            fileHandle = io.StringIO()
+            converter = TextConverter(rManager, fileHandle)
+            pageInterpreter = PDFPageInterpreter(rManager, converter)
+            pageInterpreter.process_page(page)
+            text = fileHandle.getvalue()
+            yield text
+            # close open handles
+            converter.close()
+            fileHandle.close()
+
+def extractText(pdfPath):
+    pages = extractTextByPage(pdfPath)
+    page_string = []
+    for page in pages:
+        page_string.append(f"<div>{page}</div>")
+    final_string = ' '.join(page_string)
+    return(final_string)
+
+
+def insert_into_textbook(textbook_string, textbook_file, textbook_name, textbook_edition, author_fname, author_lname):
+    sql = "insert into Textbook(textbookName,textbookContent,textbookFNAuthor,textbookLNAuthor, textbookEdition) Values(%s,%s,%s,%s,%s)"
+    print(textbook_string)
+    textbook_string = textbook_string.encode('utf8')
+    params = (textbook_name, textbook_string, author_fname, author_lname, textbook_edition)
+    with DbSelector() as db:
+        db.cursor.execute(sql, params)
+    with DbSelector() as db:
+        db.cursor.execute("select max(textbookID) from Textbook")
+        result= db.cursor.fetchone()
+    return(result[0])
+def insert_into_student_textbook_tbl(textbook_id, user_id):
+    sql = "insert into StudentTextbook(studentID, textbookID) Values(%s,%s)"
+    params = (user_id, textbook_id)
+    with DbSelector() as db:
+        db.cursor.execute(sql, params)
+
+@app.route('/textbooks', methods=["POST"])
+def findTextbooks():
+    student_id = get_post_data("student_id")
+    sql = "select t.textbookID, t.textbookName from Textbook as t join StudentTextbook as st using(textbookID) where st.studentID=%s"
+    params = (student_id,)
+    with DbSelector() as db:
+        db.cursor.execute(sql, params)
+        rows = db.cursor.fetchall()
+    textbooks = []
+    for row in rows:
+        textbooks.append({"textbook_id":row[0],"textbook_name":row[1].decode()})
+    if not rows:
+        return jsonify(message="No textbooks"), 401
+    return jsonify({"textbooks": textbooks}), 200

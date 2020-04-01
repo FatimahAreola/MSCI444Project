@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Link, Route, Switch } from "react-router-dom";
 import { UserProvider } from './userAuthentication'
 import { CourseProvider } from './courseContext'
 import { LectureProvider } from './lectureContext'
+import { TextbookProvider } from './textbookContext'
 import Login from './sayHello';
 import AccountCreate from './AccountCreate';
 import StudentHome from './studentHome';
@@ -14,6 +15,7 @@ function App(props) {
         <Router>
         <div>
             <Switch>
+                <TextbookProvider>
                 <LectureProvider>
                 <CourseProvider>
                     <UserProvider>
@@ -24,6 +26,7 @@ function App(props) {
                     </UserProvider>
                 </CourseProvider>
                 </LectureProvider>
+                </TextbookProvider>
             </Switch>
         </div>
         </Router>
