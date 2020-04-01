@@ -7,8 +7,10 @@ export const LectureDropdown = ({ lectures }) =>{
 
 
     return(
+
         <Dropdown text='Lectures' id="lectureDropdown">
             <Dropdown.Menu>
+
                 {
                     lectures.map(lecture=>{
                         return(

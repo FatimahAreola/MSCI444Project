@@ -33,12 +33,12 @@ const LectureSlides =()=>{
             return(
                 <div>
                 <p>{lectureSlides[slideCounter]}</p>
-                <Button type="submit" onClick={()=>{
+                <Button id="slideButton" type="submit" onClick={()=>{
                     setSlideCounter(prevCounter => prevCounter-1);
                 }}>
                      Previous Slide
                 </Button>
-                <Button type="submit" onClick={()=>{
+                <Button id="slideButton" type="submit" onClick={()=>{
                     setSlideCounter(prevCounter => prevCounter+1);
                 }}>
                     Next Slide

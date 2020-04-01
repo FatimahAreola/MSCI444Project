@@ -81,10 +81,14 @@ code {
 }
 
 
-#lectureDropdown{
-    margin-top:5%;
-}
-
 #lectureMatchInstructions{
     width:40%;
+}
+
+#uploadButton{
+    margin-top:2%;
+}
+
+#slideButton{
+    background-color:#48d1cc;
 }

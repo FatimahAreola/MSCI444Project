@@ -1,6 +1,12 @@
 from flask import Flask, request, jsonify
 import re
 import mysql.connector
+import os
+
+parent_dir = "/app"
+directory = "textbooks"
+uploads_dir = os.path.join(parent_dir, directory)
+os.makedirs(uploads_dir, exist_ok=True)
 
 class DbSelector():
     def __init__(self):
@@ -161,3 +167,11 @@ def createAccount():
         with DbSelector() as db:
             db.cursor.execute(sql, params)
         return jsonify(message="Successfully updated resource."), 200
+
+@app.route('/processLecture', methods=["POST"])
+def receive_lecture():
+    lecture_file = request.files['lecture']
+    print('File')
+    print(lecture_file.filename)
+    lecture_file.save(os.path.join(uploads_dir, lecture_file.filename))
+    return jsonify({"lecture_content": ["1)  kfldkdfdfdfdgfgf", "2) ldfdfjlfldkfld"]}), 200
