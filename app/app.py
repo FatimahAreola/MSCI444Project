@@ -168,10 +168,19 @@ def createAccount():
             db.cursor.execute(sql, params)
         return jsonify(message="Successfully updated resource."), 200
 
-@app.route('/processLecture', methods=["POST"])
-def receive_lecture():
-    lecture_file = request.files['lecture']
+@app.route('/uploadTextbook', methods=["POST"])
+def receive_textbook():
+    print('RECEIVE TEXTBOOK')
+    textbook_file = request.files['textbook']
+    textbook_name = request.form['textbookName']
+    textbook_edition = request.form['textbookEdition']
+    textbook_author_fname = request.form['textbookFName']
+    textbook_author_lname = request.form['textbookLName']
     print('File')
-    print(lecture_file.filename)
-    lecture_file.save(os.path.join(uploads_dir, lecture_file.filename))
-    return jsonify({"lecture_content": ["1)  kfldkdfdfdfdgfgf", "2) ldfdfjlfldkfld"]}), 200
+    print(textbook_file.filename)
+    print(textbook_edition)
+    print(textbook_name)
+    print(textbook_author_fname)
+    print(textbook_author_lname)
+    textbook_file.save(os.path.join(uploads_dir, textbook_file.filename))
+    return jsonify(message="Success"), 200

@@ -10,17 +10,25 @@ import { LectureContext } from './lectureContext';
 const LectureMatch = () =>{
     const [user, setUser] = useContext(UserContext);
     const [courseInfo, setCourseInfo] = useContext(CourseContext);
-    const [lectures, setLectures] = useState([])
+    const [lectures, setLectures] = useState([]);
     const [currentLecture,setCurrentLecture] = useContext(LectureContext);
-    const [displayUploadForm, setDisplayUploadForm] = useState(false)
-    const [lectureToProcess, setLectureToProcess] = useState("")
+    const [displayUploadForm, setDisplayUploadForm] = useState(false);
+    const [textbookToUpload, setTextbookToUpload] = useState("");
+    const [textbookName, setTextbookName] = useState("");
+    const [textbookEdition, setTextbookEdition] = useState("");
+    const [textbookFName, setTextbookFName] = useState("");
+    const [textbookLName, setTextbookLName] = useState("");
 
     const myFileRef = useRef(null);
 
-    const sendNewLecture = async(e)=>{
+    const sendNewTextbook = async(e)=>{
         const formData = new FormData();
-        formData.append("lecture", lectureToProcess)
-        const response = await fetch('/processLecture',{
+        formData.append("textbook", textbookToUpload);
+        formData.append("textbookName", textbookName);
+        formData.append("textbookEdition", textbookEdition);
+        formData.append("textbookFName", textbookFName);
+        formData.append("textbookLName", textbookLName);
+        const response = await fetch('/uploadTextbook',{
             method:'POST',
             body: formData
         });
@@ -42,46 +50,33 @@ const LectureMatch = () =>{
                         ref={myFileRef}
                         type="file"
                         hidden
-                    />
-                    <Input placeholder='Name' />
-                    <Input placeholder='Edition' />
-                    <Input placeholder='Author FName' />
-                    <Input placeholder='Author LName' />
-
-                    <br></br>
-                    <br></br>
-                    <Button.Group>
-                        <Button onClick={
-                        (e)=>{
-                            setDisplayUploadForm(false)
-                        }
-                        }>Cancel</Button>
-                        <Button.Or />
-                        <Button color='teal' >Save</Button>
-                    </Button.Group>
-                </div>
-
-            )
-        }
-        if(displayUploadForm=="lecture"){
-            return(
-                <div>
-                    <Button
-                        id="uploadButton"
-                        content="Choose File"
-                        labelPosition="left"
-                        icon="file"
-                        onClick={(e) =>
-                            myFileRef.current.click()}
-                    />
-                    <input
-                        ref={myFileRef}
-                        type="file"
-                        hidden
-                        onChange={(e)=>{
-                            setLectureToProcess(e.target.files[0])
+                        onChange = {(e)=>{
+                           setTextbookToUpload(e.target.files[0])
                         }}
                     />
+                    <Input placeholder='Name' onChange={
+                    (e)=>{
+                        setTextbookName(e.target.value)
+                    }
+                    }/>
+                    <Input placeholder='Edition' onChange={
+                    (e)=>{
+                        setTextbookEdition(e.target.value)
+                    }
+                    }/>
+                    <Input placeholder='Author FName' onChange={
+                    (e)=>{
+                        setTextbookFName(e.target.value)
+                    }
+                    }/>
+                    <Input placeholder='Author LName' onChange={
+                    (e)=>{
+                        setTextbookLName(e.target.value)
+                    }
+                    }/>
+
+                    <br></br>
+                    <br></br>
                     <Button.Group>
                         <Button onClick={
                         (e)=>{
@@ -89,9 +84,11 @@ const LectureMatch = () =>{
                         }
                         }>Cancel</Button>
                         <Button.Or />
-                        <Button color='teal'
-                            onClick = {sendNewLecture}
-                        >Save</Button>
+                        <Button color='teal' onClick = {
+                        (e)=>{
+                            sendNewTextbook()
+                        }
+                        }>Save</Button>
                     </Button.Group>
                 </div>
 
