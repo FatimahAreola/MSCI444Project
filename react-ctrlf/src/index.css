@@ -89,3 +89,11 @@ code {
     margin-top:2%;
 }
 
+#courseCodeMessage{
+    width:50%;
+}
+.courseForm{
+    width: 30%;
+    top:20%;
+    padding: 2%;
+}

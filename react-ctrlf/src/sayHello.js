@@ -21,6 +21,14 @@ const Login = () =>{
         return(response);
     }
 
+    const redirectUser =()=>{
+        if(table=="Student"){
+            history.push('/studentHome')
+        }
+        else if(table=="Instructor"){
+            history.push('/instructorHome')
+        }
+    }
     return(
         <div>
         <Header as='h1' id="loginHeader">Welcome!</Header>
@@ -50,8 +58,8 @@ const Login = () =>{
         </Form.Field>
 
         <Form.Field>
-        <Checkbox label='Professor' id="professor" onChange={
-            e => setTable("Professor")
+        <Checkbox label='Instructor' id="professor" onChange={
+            e => setTable("Instructor")
         }/>
         </Form.Field>
         <button type="submit" class="ui button"
@@ -63,7 +71,7 @@ const Login = () =>{
                             const user_id = data.user_id
                             const newUser = { user_email: email, user_type: table, user_id: user_id}
                             setUser(newUser)
-                            history.push('/studentHome')
+                            redirectUser()
                         })
                     }
                     else{

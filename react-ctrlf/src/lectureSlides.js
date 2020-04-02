@@ -62,9 +62,16 @@ const LectureSlides =()=>{
 
     return(
         <div className="splitGrid">
-                {
-                           displayFindMatchesButton()
-                }
+                    <p>
+                    <b>
+                    {currentLecture.current_lecture_name}
+                    </b>
+                    </p>
+                    <p>
+                    <b>
+                    {currentTextbook.current_tb_name}
+                    </b>
+                    </p>
             <Segment>
                 <Grid columns={2} relaxed='very'>
                     <Grid.Column>
@@ -76,6 +83,9 @@ const LectureSlides =()=>{
 
         <Divider vertical></Divider>
   </Segment>
+  {
+      displayFindMatchesButton()
+  }
         </div>
     );
 

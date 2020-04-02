@@ -7,6 +7,9 @@ from pdfminer.converter import TextConverter
 from pdfminer.pdfinterp import PDFPageInterpreter
 from pdfminer.pdfinterp import PDFResourceManager
 from pdfminer.pdfpage import PDFPage
+import random
+import string
+import datetime
 
 parent_dir = "/app"
 directory = "textbooks"
@@ -58,12 +61,11 @@ def checkLoginId(email, table):
     print('table')
     print(table)
     if table=="Student":
-        print('STUDENT TABLE')
         user_email="studentEmail"
         user_id = "studentID"
     elif table =="Instructor":
         user_email="instructorEmail"
-        user_id = "instructorID"
+        user_id = "employeeID"
     query = f"select {user_id} from {table} where {user_email}=%s"
     params = (email,)
     with DbSelector() as db:
@@ -78,14 +80,14 @@ def checkLoginId(email, table):
 def findCourses():
     print('Find courses')
     email = get_post_data('user_id')
-    sql = "select c.courseName, c.courseAccessCode from StudentCourse as sc join Course as c using(courseAccessCode) where studentID=%s"
+    sql = "select c.courseID, c.courseName, c.courseAccessCode from StudentCourse as sc join Course as c using(courseAccessCode) where studentID=%s"
     params = (email,)
     with DbSelector() as db:
         db.cursor.execute(sql, params)
         rows = db.cursor.fetchall()
     courses = []
     for row in rows:
-        courses.append({"course_name":row[0].decode(),"course_access_code":row[1]})
+        courses.append({"course_id":row[0].decode(), "course_name":row[1].decode(),"course_access_code":row[2].decode()})
     print('courses', courses)
     return jsonify({"courses": courses}), 200
 
@@ -247,3 +249,43 @@ def findTextbooks():
     if not rows:
         return jsonify(message="No textbooks"), 401
     return jsonify({"textbooks": textbooks}), 200
+
+@app.route('/course/add', methods=["POST"])
+def addCourse():
+    instructor_id = get_post_data("instructor_id")
+    course_id = get_post_data("course_id")
+    course_name = get_post_data("course_name")
+    course_description = get_post_data("course_description")
+    course_access_code = randomCode(7)
+    checkCode(course_id, course_name, course_description, course_access_code)
+    insertCourseInstructorRecord(instructor_id, course_access_code)
+    return jsonify({"course_access_code":course_access_code})
+
+def insertCourseInstructorRecord(instructor_id, course_access_code):
+    sql = "insert into InstructorCourse(employeeID, courseAccessCode) Values(%s,%s)"
+    params=(instructor_id, course_access_code)
+    with DbSelector() as db:
+        db.cursor.execute(sql, params)
+
+def randomCode(stringLength):
+    lettersAndDigits = string.ascii_letters + string.digits
+    code =  ''.join(random.choice(lettersAndDigits) for i in range(stringLength))
+    return code
+
+def checkCode(course_id, course_name, course_description, course_access_code):
+    check = False
+    code = randomCode(7)
+    while not check:
+        sql = """SELECT courseAccessCode FROM Course WHERE courseAccesscode = %s"""
+        params = (code,)
+        with DbSelector() as db:
+            db.cursor.execute(sql, params)
+            row = db.cursor.fetchone()
+        if not row:
+            check = True
+            today = datetime.datetime.now()
+            params = (course_id, course_name, course_description, course_access_code, today)
+            sql = """INSERT INTO Course (courseID, courseName, courseDescription, courseAccessCode, courseStartDate)
+        VALUES (%s, %s, %s, %s, %s)"""
+            with DbSelector() as db:
+                db.cursor.execute(sql, params)

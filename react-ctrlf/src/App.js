@@ -9,6 +9,7 @@ import AccountCreate from './AccountCreate';
 import StudentHome from './studentHome';
 import LectureMatch from './lectureMatch'
 import { Container, Header } from 'semantic-ui-react';
+import InstructorHome from './instructorHome'
 
 function App(props) {
     return(
@@ -23,6 +24,7 @@ function App(props) {
                 <Route path="/accountCreate" exact component={AccountCreate}/>
                 <Route path="/studentHome" exact component={StudentHome}/>
                 <Route path="/lectureMatch" exact component={LectureMatch}/>
+                <Route path="/instructorHome" exact component={InstructorHome}/>
                     </UserProvider>
                 </CourseProvider>
                 </LectureProvider>

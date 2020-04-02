@@ -23,7 +23,7 @@ export const Courses = ({ courses }) =>{
                     <div>
                         <button data-course-name={course.course_name} data-course-access-code={course.course_access_code} className="ui button" onClick={updateCurrentCourse}
                         >
-                    {course.course_name}
+                    {course.course_id}
                     </button>
                     <br></br>
                     <br></br>

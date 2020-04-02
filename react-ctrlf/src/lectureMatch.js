@@ -111,16 +111,6 @@ const LectureMatch = () =>{
         return(
             <Message>
                 <Message.Header className="pageHeader">{courseInfo.course_name}</Message.Header>
-                <p>
-                    <b>
-                    {currentLecture.current_lecture_name}
-                    </b>
-                </p>
-                <p>
-                    <b>
-                    {currentTextbook.current_tb_name}
-                    </b>
-                </p>
                 <LectureDropdown lectures={lectures}/>
                 <br></br>
                 <TextbookDropdown textbooks={availableTextbooks}/>
