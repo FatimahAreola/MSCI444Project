@@ -5,8 +5,8 @@ export const TextbookContext = createContext();
 export const TextbookProvider  = props =>{
     const [currentTextbook,setCurrentTextbook] = useState(
         {
-            "current_tb_id": " ",
-            "current_tb_name": " "
+            "current_tb_id": null,
+            "current_tb_name": null
         });
     return (
         <TextbookContext.Provider value={[currentTextbook,setCurrentTextbook]}>

@@ -50,15 +50,27 @@ const LectureSlides =()=>{
         }
     }
 
+    const displayFindMatchesButton=()=>{
+        if(currentTextbook.current_tb_id!=null & currentLecture.current_lecture_id!=null){
+            return(
+                <Button color="teal" type="submit">
+                    Find Matches
+                </Button>
+            )
+        }
+    }
+
     return(
         <div className="splitGrid">
+                {
+                           displayFindMatchesButton()
+                }
             <Segment>
                 <Grid columns={2} relaxed='very'>
                     <Grid.Column>
                         {displayLectureSlides()}
                     </Grid.Column>
                     <Grid.Column>
-                        {currentTextbook.current_tb_name}
                     </Grid.Column>
                 </Grid>
 
