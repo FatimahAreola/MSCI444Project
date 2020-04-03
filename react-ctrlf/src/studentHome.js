@@ -35,7 +35,7 @@ const StudentHome =()=>{
                 setCourses(data.courses);
             })
               );
-    }, []);
+    });
 
     const joinACourse = async()=>{
         const info={"user_id": user.user_id, "access_code": accessCode};

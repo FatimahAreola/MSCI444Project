@@ -82,7 +82,12 @@ const AccountCreate = () =>{
                                 const user_id = data.user_id
                                 const newUser = { user_email: email, user_type: table, user_id: user_id}
                                 setUser(newUser)
-                                history.push('/studentHome')
+                                if(table=='Student'){
+                                    history.push('/studentHome')
+                                }
+                                else{
+                                    history.push('/instructorHome')
+                                }
                             })
                         }
                         else{
