@@ -1,6 +1,9 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { Button, Message, Form, Input } from 'semantic-ui-react';
 import { UserContext } from './userAuthentication'
+import { InstructorCourseDD } from './instructorCourseDropdown'
+import { CourseContext } from './courseContext';
+
 const InstructorHome = ()=>{
     const [courseCode, setCourseCode] = useState(null)
     const [courseName, setCourseName] = useState("")
@@ -10,30 +13,78 @@ const InstructorHome = ()=>{
     const [user, setUser] = useContext(UserContext)
     const [displayUploadForm, setDisplayUploadForm] = useState(false)
     const [lectureName, setLectureName] = useState("")
+    const [lectureToUpload, setLectureToUpload] = useState("")
+    const [courses, setCourses] = useState([]);
+    const [courseInfo, setCourseInfo] = useContext(CourseContext);
+
     const myFileRef = useRef(null);
+
+    const sendNewLecture = async(e)=>{
+        const formData = new FormData();
+        formData.append("lecture", lectureToUpload);
+        formData.append("lecture_name", lectureName);
+        formData.append("course_access_code", courseInfo.course_access_code);
+        const response = await fetch('/uploadLecture',{
+            method:'POST',
+            body: formData
+        });
+        if(response.ok){
+            alert("Success!")
+        }
+    }
+
+
+    useEffect(() =>{
+        fetch('/courses/instructor',
+              {
+                  method:'POST',
+                  headers:{
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({'user_id': user.user_id})
+              }).then(response =>
+                  response.json().then(data =>{
+                      setCourses(data.courses);
+                  })
+              );
+    }, []);
+
+    const display_courses = () => {
+        if(!displayUploadForm){
+            return (<div></div>)
+        }
+        else{
+            courses.map(course=>{
+            })
+            return(<InstructorCourseDD courses={courses} />)
+        }
+    }
 
     const uploadForm=()=>{
         if (displayUploadForm){
             return(
                 <div>
-                    <Button
-                        id="uploadButton"
-                        content="Choose File"
-                        labelPosition="left"
-                        icon="file"
-                        onClick={(e) =>
-                            myFileRef.current.click()}
-                    />
-                    <input
-                        ref={myFileRef}
-                        type="file"
-                        hidden
-                    />
-                    <Input placeholder='Name' onChange={
-                    (e)=>{
+                <Button
+                    id="uploadButton"
+                    content="Choose File"
+                    labelPosition="left"
+                    icon="file"
+                    onClick={(e) =>
+                        myFileRef.current.click()}
+                />
+                <input
+                    ref={myFileRef}
+                    type="file"
+                    hidden
+                    onChange = {(e)=>{
+                        setLectureToUpload(e.target.files[0])
+                    }}
+                />
+                <Input placeholder='lectureName' onChange={
+                    e =>{
                         setLectureName(e.target.value)
                     }
-                    }/>
+                }/>
                 <br></br>
                 <br></br>
                 <Button.Group>
@@ -45,7 +96,7 @@ const InstructorHome = ()=>{
                     <Button.Or />
                     <Button color='teal' onClick = {
                     (e)=>{
-                        alert("uploaded")
+                        sendNewLecture()
                     }
                     }>Save</Button>
                 </Button.Group>
@@ -66,12 +117,10 @@ const InstructorHome = ()=>{
             },
             body: JSON.stringify(courseInfo)
         });
-        if(response.ok){
-            response.json().then(data=>{
-                setCourseCode(data.course_access_code)
-            })
+        response.json().then(data=>{
+            setCourseCode(data.courses[0].course_access_code)
+        })
         }
-    }
     const displayAddCourseForm = ()=>{
         if(displayCourseForm){
             return(
@@ -157,10 +206,16 @@ const InstructorHome = ()=>{
                 setDisplayUploadForm(true)
             }
             }>Add Lecture </Button>
-            {uploadForm()}
             {displayCourseCodeResult()}
+            {
+                display_courses()
+            }
+            {uploadForm()}
         </div>
     )
 }
 
 export default InstructorHome;
+
+
+

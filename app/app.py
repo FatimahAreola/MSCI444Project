@@ -16,6 +16,10 @@ directory = "textbooks"
 uploads_dir = os.path.join(parent_dir, directory)
 os.makedirs(uploads_dir, exist_ok=True)
 
+lecture_directory = "lectures"
+uploads_dir = os.path.join(parent_dir, lecture_directory)
+os.makedirs(lecture_directory, exist_ok=True)
+
 class DbSelector():
     def __init__(self):
         self.config = {'user': 'root',
@@ -117,11 +121,15 @@ def joinCourse():
 def findLectures():
     print('Find Lectures')
     course_access_code = get_post_data('course_access_code')
-    sql = "select l.lectureID, l.lectureName from Lecture as l join LectureCourse as c using(lectureID) where courseAccessCode=%s"
+    print('Course Access code')
+    print(course_access_code)
+    sql = "select l.lectureID, l.lectureName from Lecture as l join LectureCourse as c using(lectureID) where c.courseAccessCode=%s"
     params = (course_access_code,)
     with DbSelector() as db:
         db.cursor.execute(sql, params)
         rows = db.cursor.fetchall()
+    print('rows')
+    print(rows)
     lectures = []
     for row in rows:
         lectures.append({"lecture_id":row[0],"lecture_name":row[1].decode()})
@@ -259,7 +267,8 @@ def addCourse():
     course_access_code = randomCode(7)
     checkCode(course_id, course_name, course_description, course_access_code)
     insertCourseInstructorRecord(instructor_id, course_access_code)
-    return jsonify({"course_access_code":course_access_code})
+    course = [{"course_access_code":course_access_code, "course_name": course_name}]
+    return jsonify({"courses":course})
 
 def insertCourseInstructorRecord(instructor_id, course_access_code):
     sql = "insert into InstructorCourse(employeeID, courseAccessCode) Values(%s,%s)"
@@ -289,3 +298,53 @@ def checkCode(course_id, course_name, course_description, course_access_code):
         VALUES (%s, %s, %s, %s, %s)"""
             with DbSelector() as db:
                 db.cursor.execute(sql, params)
+
+@app.route('/uploadLecture', methods=["POST"])
+def addLecture():
+    print("adding lecture")
+    lecture_file = request.files["lecture"]
+    lecture_name = request.form["lecture_name"]
+    course_access_code = request.form["course_access_code"]
+    today = datetime.datetime.now()
+    pdf_path = os.path.join(lecture_directory, lecture_file.filename)
+    lecture_file.save(pdf_path)
+    lecture_string = extractText(pdf_path)
+    print(lecture_string)
+    lecture_id = insert_lecture(lecture_name, lecture_string)
+    insert_course_lecture(lecture_id, course_access_code)
+    return jsonify(message="Success"), 200
+
+def insert_lecture(lecture_name, lecture_string):
+    lecture_string = lecture_string.encode("utf8")
+    sql = "insert into Lecture(lectureName, lectureContent) Values(%s,%s)"
+    params=(lecture_name, lecture_string)
+    with DbSelector() as db:
+        db.cursor.execute(sql, params)
+    with DbSelector() as db:
+        db.cursor.execute("select max(lectureID) from Lecture")
+        result= db.cursor.fetchone()
+    return result[0]
+
+def insert_course_lecture(lecture_id,course_id):
+    sql = "insert into LectureCourse(lectureID, courseAccessCode) Values(%s, %s)"
+    params = (lecture_id, course_id)
+    with DbSelector() as db:
+        db.cursor.execute(sql, params)
+
+@app.route('/courses/instructor', methods=["POST"])
+def findInstructorCourses():
+    print('Find courses')
+    email = get_post_data('user_id')
+    sql = "select c.courseID, c.courseName, c.courseAccessCode from InstructorCourse as ic join Course as c using(courseAccessCode) where employeeID=%s"
+    params = (email,)
+    with DbSelector() as db:
+        db.cursor.execute(sql, params)
+        rows = db.cursor.fetchall()
+    courses = []
+    for row in rows:
+        courses.append({"course_id":row[0].decode(), "course_name":row[1].decode(),"course_access_code":row[2].decode()})
+    print('courses', courses)
+    return jsonify({"courses": courses}), 200
+
+
+

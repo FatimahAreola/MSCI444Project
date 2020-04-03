@@ -1,31 +1,3 @@
-from flask import Flask
-import mysql.connector
-config = {
-    'user': 'root',
-    'password': 'sherlockeD123',
-    'host': 'db',
-    'port': '3306',
-    'database': 'MSCI'
-}
-
-###I started this section and then realized this might be something that is done through the form for users?
-###and the form would call the code I've written below?
-connection = mysql.connector.connect(**config)
-
-sqlStatement = connection.cursor()
-
-cursor.execute('''INSERT INTO MSCI.Lecture (lectureName, lectureContent)
-                Values (#Carla to insert here?  
-                lectureContentToStore
-                #I actually don't know what I am doing here I am so sorry
-                )
-''')
-
-connection.commit()
-connection.close()
-app = Flask(__name__)
-
-@app.route('/pdfParse')
 import io
 from pdfminer.converter import TextConverter
 from pdfminer.pdfinterp import PDFPageInterpreter
@@ -54,8 +26,5 @@ def extract_text(pdf_path):
         print(page)  
         print("</div>")
         print()
-#Example:  print(extract_text('C:/Users/fatim/Desktop/MSCI444Project/ob_textbook.pdf')) 
-#Example:  print(extract_text('C:/Users/fatim/Desktop/MSCI444Project/Different_Approaches_to_Organizations_UPDATED.pdf'))        
-lectureContentToStore = extract_text('PDF filePath')
 
 
