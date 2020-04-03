@@ -24,7 +24,7 @@ CREATE TABLE Course(
 courseID VARCHAR(7),
 courseName VARCHAR(50),
 courseDescription TEXT,
-courseAccessCode INTEGER AUTO_INCREMENT,
+courseAccessCode VARCHAR(7),
 courseStartDate DATE,
 courseEndDate DATE,
 PRIMARY KEY (courseAccessCode)
@@ -61,7 +61,7 @@ FOREIGN KEY (textbookID)
 
 CREATE TABLE StudentCourse(
 studentID INTEGER,
-courseAccessCode INTEGER,
+courseAccessCode VARCHAR(7),
 Primary KEY (studentID, courseAccessCode),
 FOREIGN KEY (studentID)
 REFERENCES Student(studentID)
@@ -73,7 +73,7 @@ ON DELETE CASCADE
 
 CREATE TABLE InstructorCourse(
 employeeID INTEGER,
-courseAccessCode INTEGER,
+courseAccessCode VARCHAR(7),
 Primary KEY (employeeID, courseAccessCode),
 FOREIGN KEY (employeeID)
     REFERENCES Instructor(employeeID)
@@ -85,7 +85,7 @@ FOREIGN KEY (courseAccessCode)
 
 CREATE TABLE LectureCourse(
 lectureID INTEGER,
-courseAccessCode INTEGER,
+courseAccessCode VARCHAR(7),
 Primary KEY (lectureID, courseAccessCode),
 FOREIGN KEY (lectureID)
     REFERENCES Lecture(lectureID)

@@ -2,3 +2,5 @@ Flask
 mysql-connector
 requests
 regex
+pdfminer
+pdfminer.six

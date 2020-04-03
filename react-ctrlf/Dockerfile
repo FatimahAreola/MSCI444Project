@@ -8,6 +8,7 @@ RUN npm install --silent
 # Copy app source code
 COPY . .
 
+RUN npm install react-router-dom
 #Expose port and start application
 EXPOSE 3000
 CMD ["npm", "start"]
