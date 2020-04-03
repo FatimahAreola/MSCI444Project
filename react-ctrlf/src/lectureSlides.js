@@ -47,7 +47,6 @@ const LectureSlides =()=>{
             body: JSON.stringify(info)
         });
         response.json().then(data=>{
-            alert(data.matches.length)
             setCurrentMatchesSlides(data.matches)
         })
     }

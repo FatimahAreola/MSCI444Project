@@ -102,7 +102,7 @@ def match():
     result = []
 
     for index,value in enumerate(matchValue):
-        if value['weightedScoring']>0.50:
+        if value['cosineSimilarity']>0.8:
             result.append(textbookSectionsToMatch[index])
     print('match result')
     print(result)
