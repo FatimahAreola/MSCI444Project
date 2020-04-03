@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, json, jsonify
 import re
 import mysql.connector
 import os
 import io
+import requests
 from pdfminer.converter import TextConverter
 from pdfminer.pdfinterp import PDFPageInterpreter
 from pdfminer.pdfinterp import PDFResourceManager
@@ -35,6 +36,7 @@ class DbSelector():
         self.connection.commit()
         self.connection.close()
         self.cursor.close()
+
 app = Flask(__name__)
 
 
@@ -46,7 +48,67 @@ def get_post_data(name):
 
 @app.route('/hello')
 def hello():
-    return "hello"
+    return "hey"
+
+# sample json body
+# [
+# 	{
+# 	"lectureContent" : "blah blah blah",
+# 	"textbookID" : 1
+# 	}
+# ]
+@app.route('/match', methods=["POST"])
+def match():
+    req_data = request.get_json()
+    config = {
+        'user': 'root',
+        'password': 'sherlockeD123',
+        'host': 'db',
+        'port': '3306',
+        'database': 'MSCI'
+    }
+    connection = mysql.connector.connect(**config)
+    cursor = connection.cursor()
+
+    lectureContentToMatch = req_data['lectureContent']
+
+    textbookID = req_data['textbookID']
+
+    query = "SELECT textbookContent FROM Textbook WHERE textbookID = %s;"
+    
+    cursor.execute(query, [textbookID])
+    
+    content = None
+
+    for textbookContent in cursor:
+        content = textbookContent[0]
+
+    textbookSectionsToMatch = re.findall("<div>(.*?)</div>", content)
+
+    body=[]
+
+    for section in textbookSectionsToMatch:
+        term = []
+        term.append({"term" : lectureContentToMatch})
+        term.append({"term" : section})
+        body.append(term)
+    
+    url = 'http://api.cortical.io:80/rest/compare/bulk?retina_name=en_associative'
+
+    matchValue = requests.post(url, json=body)
+
+    matchValue = json.loads(matchValue.text)
+
+    result = []
+
+    for index,value in enumerate(matchValue):
+        if value['cosineSimilarity']>0.8:
+            result.append(textbookSectionsToMatch[index])
+    print('match result')
+    print(result)
+
+    return jsonify({'matches': result}), 200
+
 @app.route('/login', methods=["POST"])
 def checkLogin():
     print('Login')
@@ -141,20 +203,18 @@ def findLectures():
 def findLectureSlides():
     print('Finding lecture slides')
     lecture_id = get_post_data('lecture_id')
+    print('lecture id1')
+    print(lecture_id)
     sql = "select lectureContent from Lecture where lectureID=%s"
     params = (lecture_id, )
     lecture_slides = []
     with DbSelector() as db:
         db.cursor.execute(sql, params)
         result = db.cursor.fetchone()
-    print('Result')
-    print(result)
     if result:
         matches = re.findall("<div>(.*?)</div>", result[0].decode())
         for match in matches:
             lecture_slides.append(match.strip())
-        print('Lecture Slides List')
-        print(lecture_slides)
         return jsonify({"lecture_content": lecture_slides}), 200
     else:
         return jsonify(message="No lecture slides found"), 401
@@ -228,7 +288,6 @@ def extractText(pdfPath):
 
 def insert_into_textbook(textbook_string, textbook_file, textbook_name, textbook_edition, author_fname, author_lname):
     sql = "insert into Textbook(textbookName,textbookContent,textbookFNAuthor,textbookLNAuthor, textbookEdition) Values(%s,%s,%s,%s,%s)"
-    print(textbook_string)
     textbook_string = textbook_string.encode('utf8')
     params = (textbook_name, textbook_string, author_fname, author_lname, textbook_edition)
     with DbSelector() as db:
@@ -309,7 +368,6 @@ def addLecture():
     pdf_path = os.path.join(lecture_directory, lecture_file.filename)
     lecture_file.save(pdf_path)
     lecture_string = extractText(pdf_path)
-    print(lecture_string)
     lecture_id = insert_lecture(lecture_name, lecture_string)
     insert_course_lecture(lecture_id, course_access_code)
     return jsonify(message="Success"), 200
@@ -345,6 +403,3 @@ def findInstructorCourses():
         courses.append({"course_id":row[0].decode(), "course_name":row[1].decode(),"course_access_code":row[2].decode()})
     print('courses', courses)
     return jsonify({"courses": courses}), 200
-
-
-

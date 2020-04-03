@@ -6,6 +6,27 @@ export const LectureDropdown = ({ lectures }) =>{
     const [currentLecture,setCurrentLecture] = useContext(LectureContext);
 
 
+    const fetch_lecture_content = async(lecture)=>{
+       const response = await fetch('/lectureSlides',
+          {
+              method:'POST',
+              headers:{
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({'lecture_id': lecture.lecture_id})
+          }).then(response =>{
+              if(response.ok){
+
+                  response.json().then(data =>{
+                      alert(typeof data.lecture_content)
+                      setCurrentLecture({"current_lecture_id": lecture.lecture_id,
+                                         "current_lecture_name": lecture.lecture_name,
+                                         "current_lecture": data.lecture_content})
+              })
+              }
+          });
+    }
+
     return(
 
         <Dropdown text='Lectures' id="lectureDropdown">
@@ -16,8 +37,7 @@ export const LectureDropdown = ({ lectures }) =>{
                         return(
                             <Dropdown.Item text={lecture.lecture_name} onClick={
                             (e)=>{
-                                setCurrentLecture({"current_lecture_id": lecture.lecture_id,
-                                "current_lecture_name": lecture.lecture_name});
+                                fetch_lecture_content(lecture);
                             }}/>
                         )
                     })
