@@ -18,7 +18,6 @@ export const LectureDropdown = ({ lectures }) =>{
               if(response.ok){
 
                   response.json().then(data =>{
-                      alert(typeof data.lecture_content)
                       setCurrentLecture({"current_lecture_id": lecture.lecture_id,
                                          "current_lecture_name": lecture.lecture_name,
                                          "current_lecture": data.lecture_content})
