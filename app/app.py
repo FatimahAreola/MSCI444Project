@@ -105,7 +105,7 @@ def match():
         if value['weightedScoring']>0.80:
             result.append(textbookSectionsToMatch[index])
 
-    return {'matches': result}
+    return jsonify({'matches': result}), 200
 
 @app.route('/login', methods=["POST"])
 def checkLogin():

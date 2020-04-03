@@ -6,8 +6,10 @@ import { TextbookContext } from './textbookContext'
 const LectureSlides =()=>{
     const [currentLecture,setCurrentLecture] = useContext(LectureContext);
     const [lectureSlides, setCurrentLectureSlides] = useState([]);
+    const [MatchesSlides, setCurrentMatchesSlides] = useState([]);
+    const [matchCounter, setMatchCounter] = useState(0);
     const [slideCounter, setSlideCounter] = useState(0);
-    const [currentTextbook, setCurrentTextbook] = useContext(TextbookContext)
+    const [currentTextbook, setCurrentTextbook] = useContext(TextbookContext);
 
     useEffect(() =>{
         fetch('/lectureSlides',
@@ -52,10 +54,49 @@ const LectureSlides =()=>{
 
     const displayFindMatchesButton=()=>{
         if(currentTextbook.current_tb_id!=null & currentLecture.current_lecture_id!=null){
+            const findMatches = async()=>{
+                const info={"lectureCOntent": lectureSlides[slideCounter], "textbookID": currentTextbook.current_tb_id};
+                const response = await fetch('/matches',{
+                    method:'POST',
+                    headers:{
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(info)
+                });
+                response.json().then(data=>{
+                    setCurrentMatchesSlides(data.matches)
+                })
+            }
             return(
-                <Button color="teal" type="submit">
+                <Button color="teal" type="submit" onClick={()=>{
+                    findMatches()
+                }}>
                     Find Matches
                 </Button>
+            )
+        }
+    }
+
+    const displayMatches =()=>{
+        if(MatchesSlides.length==0){
+            return(<p>{MatchesSlides[slideCounter]}</p>)
+        }
+        else{
+            return(
+                <div>
+                <p>{MatchesSlides[matchCounter]}</p>
+                <Button color="teal" type="submit" onClick={()=>{
+                    setMatchCounter(prevCounter => prevCounter-1);
+                }}>
+                     Previous Match
+                </Button>
+                <Button color="teal" type="submit" onClick={()=>{
+                    setMatchCounter(prevCounter => prevCounter+1);
+                }}>
+                    Next Match
+                </Button>
+                </div>
+
             )
         }
     }
@@ -78,6 +119,7 @@ const LectureSlides =()=>{
                         {displayLectureSlides()}
                     </Grid.Column>
                     <Grid.Column>
+                        {displayMatches()}
                     </Grid.Column>
                 </Grid>
 
