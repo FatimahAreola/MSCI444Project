@@ -69,8 +69,8 @@ const AccountCreate = () =>{
             }/>
         </Form.Field>
         <Form.Field>
-            <Checkbox label='Professor' id="professor" onChange={
-            e => setTable("Professor")
+            <Checkbox label='Instructor' id="professor" onChange={
+            e => setTable("Instructor")
             }/>
         </Form.Field>
         <button type="submit" class="ui button"
@@ -101,3 +101,5 @@ const AccountCreate = () =>{
 };
 
 export default AccountCreate;
+
+

@@ -89,6 +89,11 @@ code {
     margin-top:2%;
 }
 
-#slideButton{
-    background-color:#48d1cc;
+#courseCodeMessage{
+    width:50%;
+}
+.courseForm{
+    width: 30%;
+    top:20%;
+    padding: 2%;
 }

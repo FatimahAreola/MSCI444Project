@@ -5,8 +5,8 @@ export const LectureContext = createContext();
 export const LectureProvider  = props =>{
     const [currentLecture,setCurrentLecture] = useState(
         {
-            "current_lecture_id": " ",
-            "current_lecture_name": " "
+            "current_lecture_id": null,
+            "current_lecture_name": null
         });
     return (
         <LectureContext.Provider value={[currentLecture,setCurrentLecture]}>

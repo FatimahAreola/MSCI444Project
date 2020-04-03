@@ -5,6 +5,8 @@ import { Dropdown, Message, Button, Input} from 'semantic-ui-react'
 import { LectureDropdown } from './Dropdown'
 import LectureSlides from './lectureSlides'
 import { LectureContext } from './lectureContext';
+import { TextbookDropdown } from './textbooks';
+import { TextbookContext } from './textbookContext';
 
 
 const LectureMatch = () =>{
@@ -12,13 +14,14 @@ const LectureMatch = () =>{
     const [courseInfo, setCourseInfo] = useContext(CourseContext);
     const [lectures, setLectures] = useState([]);
     const [currentLecture,setCurrentLecture] = useContext(LectureContext);
+    const [currentTextbook, setCurrentTextbook] = useContext(TextbookContext);
     const [displayUploadForm, setDisplayUploadForm] = useState(false);
     const [textbookToUpload, setTextbookToUpload] = useState("");
     const [textbookName, setTextbookName] = useState("");
     const [textbookEdition, setTextbookEdition] = useState("");
     const [textbookFName, setTextbookFName] = useState("");
     const [textbookLName, setTextbookLName] = useState("");
-
+    const [availableTextbooks, setAvailableTextbooks] = useState([]);
     const myFileRef = useRef(null);
 
     const sendNewTextbook = async(e)=>{
@@ -28,10 +31,17 @@ const LectureMatch = () =>{
         formData.append("textbookEdition", textbookEdition);
         formData.append("textbookFName", textbookFName);
         formData.append("textbookLName", textbookLName);
+        formData.append("user", user.user_id);
         const response = await fetch('/uploadTextbook',{
             method:'POST',
             body: formData
         });
+        if(response.ok){
+            response.json().then(data =>{
+                alert("Success!")
+                setAvailableTextbooks(prevTextbooks => [...prevTextbooks,{"textbook_id": data.textbook_id, "textbook_name": data.textbook_name}])
+            })
+        }
     }
 
     const uploadForm=()=>{
@@ -100,10 +110,9 @@ const LectureMatch = () =>{
         return(
             <Message>
                 <Message.Header className="pageHeader">{courseInfo.course_name}</Message.Header>
-                <p>
-                    {currentLecture.current_lecture_name}
-                </p>
                 <LectureDropdown lectures={lectures}/>
+                <br></br>
+                <TextbookDropdown textbooks={availableTextbooks}/>
             </Message>
         )
     }
@@ -142,6 +151,23 @@ const LectureMatch = () =>{
                       });
                   }
                   })
+    }, []);
+
+    useEffect(() =>{
+        fetch('/textbooks',
+              {
+                  method:'POST',
+                  headers:{
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({'student_id': user.user_id})
+              }).then(response =>{
+                  if(response.ok){
+                      response.json().then(data =>{
+                          setAvailableTextbooks(data.textbooks);
+                      });
+                  }
+              })
     }, []);
 
     const updateDisplayUploadForm =(e)=>{
