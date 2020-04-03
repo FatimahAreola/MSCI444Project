@@ -47,7 +47,7 @@ const InstructorHome = ()=>{
                       setCourses(data.courses);
                   })
               );
-    }, []);
+    });
 
     const display_courses = () => {
         if(!displayUploadForm){
