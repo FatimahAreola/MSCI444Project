@@ -11,31 +11,15 @@ const LectureSlides =()=>{
     const [slideCounter, setSlideCounter] = useState(0);
     const [currentTextbook, setCurrentTextbook] = useContext(TextbookContext);
 
-    useEffect(() =>{
-        fetch('/lectureSlides',
-              {
-                  method:'POST',
-                  headers:{
-                      'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({'lecture_id': currentLecture.current_lecture_id})
-              }).then(response =>{
-                  if(response.ok){
-                      response.json().then(data =>{
-                          setCurrentLectureSlides(data.lecture_content);
-                      });
-                  }
-              })
-    });
 
     const displayLectureSlides =()=>{
-        if(lectureSlides.length==0){
+        if(currentLecture.current_lecture.length==0){
             return(<p></p>)
         }
         else{
             return(
                 <div>
-                <p>{lectureSlides[slideCounter]}</p>
+                <p>{currentLecture.current_lecture[slideCounter]}</p>
                 <Button color="teal" type="submit" onClick={()=>{
                     setSlideCounter(prevCounter => prevCounter-1);
                 }}>
@@ -52,21 +36,24 @@ const LectureSlides =()=>{
         }
     }
 
+
+    const findMatches = async()=>{
+        const info={"lectureContent": currentLecture.current_lecture[slideCounter], "textbookID": currentTextbook.current_tb_id};
+        const response = await fetch('/match',{
+            method:'POST',
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(info)
+        });
+        response.json().then(data=>{
+            alert(data.matches.length)
+            setCurrentMatchesSlides(data.matches)
+        })
+    }
+
     const displayFindMatchesButton=()=>{
         if(currentTextbook.current_tb_id!=null & currentLecture.current_lecture_id!=null){
-            const findMatches = async()=>{
-                const info={"lectureCOntent": lectureSlides[slideCounter], "textbookID": currentTextbook.current_tb_id};
-                const response = await fetch('/matches',{
-                    method:'POST',
-                    headers:{
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(info)
-                });
-                response.json().then(data=>{
-                    setCurrentMatchesSlides(data.matches)
-                })
-            }
             return(
                 <Button color="teal" type="submit" onClick={()=>{
                     findMatches()
@@ -133,3 +120,5 @@ const LectureSlides =()=>{
 
 }
 export default LectureSlides;
+
+
